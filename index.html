@@ -346,6 +346,7 @@ const EVENT_DATE = new Date('2026-08-21T00:00:00');
 
 let players = []; // {name, ts}
 let myName = null; // tracked only for this browsing session
+let hasLoadedOnce = false;
 
 function updateCountdown(){
   const now = new Date();
@@ -361,10 +362,15 @@ setInterval(updateCountdown, 1000*60*60);
 async function loadPlayers(){
   try{
     const res = await fetch('/api/players');
+    if(!res.ok) throw new Error('bad response');
     const data = await res.json();
     players = Array.isArray(data.players) ? data.players : [];
+    hasLoadedOnce = true;
   }catch(e){
+    // Never wipe the list we already know about because of a transient
+    // network error — only start from empty on the very first load.
     console.error('Falha ao carregar', e);
+    if(!hasLoadedOnce){ players = []; }
   }
   render();
 }
@@ -531,8 +537,11 @@ document.getElementById('cancel-btn').addEventListener('click', () => {
 });
 
 loadPlayers();
-// keep the roster fresh for everyone viewing the page
-setInterval(loadPlayers, 8000);
+// keep the roster fresh for everyone viewing the page — near-live view
+setInterval(loadPlayers, 4000);
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible') loadPlayers();
+});
 </script>
 </body>
 </html>
