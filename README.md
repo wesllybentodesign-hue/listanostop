@@ -6,7 +6,7 @@ Site simples para os jogadores confirmarem presença nas 20 vagas do evento (21/
 - `api/players.js` — função serverless que guarda a lista de confirmados, compartilhada entre todos que acessarem o link.
 - `package.json` — dependência da função (`@vercel/kv`).
 
-> **Importante:** este projeto guarda os dados no **Vercel KV** (um banco chave-valor gratuito no plano free da Vercel). Sem isso configurado, a página carrega mas ninguém consegue salvar confirmação. Siga os passos abaixo — leva uns 5 minutos.
+> **Importante:** este projeto guarda os dados no **Vercel KV** (um banco chave-valor gratuito no plano free da Vercel), usando uma lista Redis com `rpush` — cada confirmação é adicionada de forma atômica, então mesmo que várias pessoas confirmem ao mesmo tempo, ninguém sobrescreve a confirmação de outra. Sem o KV configurado, a página carrega mas ninguém consegue salvar confirmação. Siga os passos abaixo — leva uns 5 minutos.
 
 ## 1. Subir no GitHub
 

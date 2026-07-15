@@ -347,6 +347,8 @@ const EVENT_DATE = new Date('2026-08-21T00:00:00');
 let players = []; // {name, ts}
 let myName = null; // tracked only for this browsing session
 let hasLoadedOnce = false;
+let loadToken = 0;
+let writeInProgress = false;
 
 function updateCountdown(){
   const now = new Date();
@@ -360,31 +362,33 @@ updateCountdown();
 setInterval(updateCountdown, 1000*60*60);
 
 async function loadPlayers(){
+  // Skip background refreshes while a confirm/cancel is being written to
+  // avoid a slow read landing in the middle of that write.
+  if(writeInProgress) return;
+
+  const token = ++loadToken;
+  let fresh = null;
   try{
     const res = await fetch('/api/players');
-    if(!res.ok) throw new Error('bad response');
+    if(!res.ok) throw new Error('bad response: ' + res.status);
     const data = await res.json();
-    players = Array.isArray(data.players) ? data.players : [];
-    hasLoadedOnce = true;
+    fresh = Array.isArray(data.players) ? data.players : [];
   }catch(e){
+    console.error('Falha ao carregar', e);
     // Never wipe the list we already know about because of a transient
     // network error — only start from empty on the very first load.
-    console.error('Falha ao carregar', e);
-    if(!hasLoadedOnce){ players = []; }
+    fresh = hasLoadedOnce ? null : [];
+  }
+
+  // A newer load already started/finished while this one was in flight —
+  // this response is stale, never let it overwrite fresher data.
+  if(token !== loadToken) return;
+
+  if(fresh !== null){
+    players = fresh;
+    hasLoadedOnce = true;
   }
   render();
-}
-
-async function savePlayers(){
-  try{
-    await fetch('/api/players', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ players })
-    });
-  }catch(e){
-    console.error('Falha ao salvar', e);
-  }
 }
 
 function render(){
@@ -499,32 +503,64 @@ async function confirmPlayer(){
   }
 
   btn.disabled = true;
-  await loadPlayers(); // refresh with latest shared state before writing
+  writeInProgress = true;
 
-  const exists = players.some(p => p.name.toLowerCase() === name.toLowerCase());
-  if(exists){
-    msg.textContent = 'Esse nick já confirmou presença.';
+  try{
+    const res = await fetch('/api/players', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'confirm', name })
+    });
+    const data = await res.json();
+
+    if(!res.ok){
+      throw new Error(data.error || 'Falha ao confirmar.');
+    }
+
+    if(!data.ok && data.reason === 'duplicate'){
+      msg.textContent = 'Esse nick já confirmou presença.';
+      msg.classList.add('error');
+      players = Array.isArray(data.players) ? data.players : players;
+      writeInProgress = false;
+      render();
+      btn.disabled = false;
+      return;
+    }
+
+    players = data.players;
+    myName = name;
+    writeInProgress = false;
+    render();
+
+    const slotIndex = typeof data.slotIndex === 'number' ? data.slotIndex : players.findIndex(p => p.name === name);
+    showSuccessState(name, slotIndex, slotIndex >= MAX_SLOTS);
+  }catch(e){
+    console.error(e);
+    msg.textContent = 'Não foi possível confirmar agora. Tente novamente em instantes.';
     msg.classList.add('error');
-    btn.disabled = false;
-    return;
+    writeInProgress = false;
   }
 
-  players.push({ name, ts: Date.now() });
-  await savePlayers();
-  myName = name;
-  render();
-
-  const slotIndex = players.findIndex(p => p.name === name);
-  showSuccessState(name, slotIndex, slotIndex >= MAX_SLOTS);
   btn.disabled = false;
 }
 
 async function removePlayer(name){
   if(!confirm(`Cancelar a confirmação de "${name}"?`)) return;
-  await loadPlayers();
-  players = players.filter(p => p.name !== name);
-  await savePlayers();
-  if(name === myName){ myName = null; showFormState(); }
+  writeInProgress = true;
+  try{
+    const res = await fetch('/api/players', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'remove', name })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Falha ao cancelar.');
+    players = data.players;
+    if(name === myName){ myName = null; showFormState(); }
+  }catch(e){
+    console.error(e);
+  }
+  writeInProgress = false;
   render();
 }
 
