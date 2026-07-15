@@ -1,8 +1,13 @@
 {
-  "name": "confirmacao-dota2",
+  "name": "nonstop-classico-dota2",
   "version": "1.0.0",
   "private": true,
-  "dependencies": {
-    "@vercel/kv": "^2.0.0"
+  "description": "Pagina unica para confirmacao de presenca do Nonstop Classico Dota 2.",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

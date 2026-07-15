@@ -1,583 +1,1063 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Confirmação — Evento Dota 2</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nonstop Clássico Dota 2 | Confirmação de Presença</title>
+    <meta
+      name="description"
+      content="Confirme sua presença no Nonstop Clássico Dota 2 e acompanhe as vagas ao vivo."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #000000;
+        --bg-soft: #141414;
+        --panel: rgba(18, 18, 18, 0.92);
+        --panel-strong: rgba(10, 10, 10, 0.96);
+        --text: #f9f9f9;
+        --muted: #a7a7a7;
+        --muted-2: #646464;
+        --line: rgba(255, 255, 255, 0.08);
+        --accent: #e85002;
+        --accent-2: #f16001;
+        --accent-3: #c10801;
+        --success: #f9f9f9;
+        --danger: #ff8f66;
+        --shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+        --radius-xl: 28px;
+        --radius-lg: 18px;
+        --radius-md: 14px;
+        --slot-count: 20;
+      }
 
-  :root{
-    --bg: #000000;
-    --panel: #111111;
-    --panel-border: #333333;
-    --orange-deep: #C10801;
-    --orange: #E85002;
-    --orange-light: #F16001;
-    --sand: #D9C3AB;
-    --white: #F9F9F9;
-    --gray: #646464;
-    --light-gray: #A7A7A7;
-    --dark-gray: #333333;
-  }
+      * {
+        box-sizing: border-box;
+      }
 
-  *{ box-sizing: border-box; }
+      html {
+        scroll-behavior: smooth;
+      }
 
-  body{
-    margin:0;
-    background: radial-gradient(circle at 50% -10%, #1a1a1a 0%, var(--bg) 45%, #000000 100%);
-    color: var(--white);
-    font-family: 'IBM Plex Sans', sans-serif;
-    min-height: 100vh;
-    padding: 0 0 64px;
-  }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top, rgba(241, 96, 1, 0.2), transparent 28%),
+          radial-gradient(circle at 85% 18%, rgba(193, 8, 1, 0.18), transparent 24%),
+          linear-gradient(180deg, #111111 0%, #020202 42%, #000000 100%);
+        font-family: "Rajdhani", sans-serif;
+      }
 
-  .wrap{ max-width: 720px; margin: 0 auto; padding: 0 20px; }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(120deg, rgba(255, 255, 255, 0.03), transparent 32%),
+          repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.02) 0,
+            rgba(255, 255, 255, 0.02) 1px,
+            transparent 1px,
+            transparent 72px
+          );
+        mix-blend-mode: screen;
+        opacity: 0.32;
+      }
 
-  /* ---------- HERO ---------- */
-  .hero{
-    text-align:center;
-    padding: 48px 20px 32px;
-    position: relative;
-  }
-  .hero::before{
-    content:"";
-    position:absolute; top:0; left:50%; transform:translateX(-50%);
-    width:1px; height:28px; background: linear-gradient(var(--orange), transparent);
-  }
-  .eyebrow{
-    font-size: 12px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--orange-light);
-    margin-bottom: 14px;
-    font-weight: 600;
-  }
-  h1{
-    font-family: 'Cinzel', serif;
-    font-weight: 800;
-    font-size: clamp(28px, 6vw, 44px);
-    margin: 0 0 10px;
-    letter-spacing: 0.5px;
-    background: linear-gradient(180deg, var(--orange-light), var(--orange) 60%, var(--orange-deep));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .subtitle{ color: var(--light-gray); font-size: 15px; margin-bottom: 26px; }
-  .date-pill{
-    display:inline-flex; align-items:center; gap:10px;
-    border: 1px solid var(--panel-border);
-    background: var(--panel);
-    padding: 10px 20px;
-    border-radius: 999px;
-    font-size: 14px;
-    color: var(--white);
-  }
-  .date-pill b{ color: var(--orange-light); font-weight:600; }
-  .countdown{ color: var(--gray); font-size: 12px; margin-left: 6px; }
+      .shell {
+        width: min(1180px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 40px 0 64px;
+      }
 
-  /* ---------- FORM (primary action, front and center) ---------- */
-  .action-panel{
-    background: linear-gradient(160deg, #161616, #0a0a0a);
-    border: 1px solid var(--orange-deep);
-    border-radius: 20px;
-    padding: 30px 26px;
-    margin: 8px 0 24px;
-    box-shadow: 0 0 0 1px rgba(232,80,2,0.08), 0 20px 50px -20px rgba(232,80,2,0.35);
-  }
-  .action-panel h2{
-    font-family:'Cinzel', serif;
-    font-size:19px;
-    margin:0 0 6px;
-    color: var(--white);
-    text-align:center;
-  }
-  .action-panel p.helper{ margin:0 0 20px; color:var(--light-gray); font-size:13.5px; text-align:center; }
-  .form-row{ display:flex; gap:10px; flex-wrap:wrap; }
-  input[type=text]{
-    flex:1; min-width:180px;
-    background:#000000;
-    border:1px solid var(--dark-gray);
-    color:var(--white);
-    padding: 15px 16px;
-    border-radius:12px;
-    font-size:16px;
-    font-family:inherit;
-    animation: input-pulse 2.2s ease-in-out infinite;
-  }
-  input[type=text]:focus{ outline:none; border-color:var(--orange); animation:none; }
-  input[type=text]::placeholder{ color: var(--gray); }
-  @keyframes input-pulse{
-    0%, 100% { border-color: var(--dark-gray); box-shadow: 0 0 0 0 rgba(232,80,2,0); }
-    50% { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(232,80,2,0.16); }
-  }
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 28px;
+        border: 1px solid rgba(232, 80, 2, 0.22);
+        border-radius: 32px;
+        background:
+          linear-gradient(145deg, rgba(241, 96, 1, 0.16), rgba(0, 0, 0, 0) 38%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+          var(--panel-strong);
+        box-shadow: var(--shadow);
+      }
 
-  button.confirm-btn{
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(180deg, var(--orange-light), var(--orange-deep));
-    color:var(--white);
-    border:none;
-    font-weight:700;
-    font-size:16px;
-    padding: 15px 26px;
-    border-radius:12px;
-    cursor:pointer;
-    font-family:inherit;
-    transition: transform .15s ease, filter .15s ease;
-    white-space:nowrap;
-    animation: btn-pulse 2.4s ease-in-out infinite;
-  }
-  button.confirm-btn::after{
-    content:"";
-    position:absolute;
-    top:0; left:-160%;
-    width:55%; height:100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
-    transform: skewX(-20deg);
-    animation: btn-shine 3.2s ease-in-out infinite;
-  }
-  button.confirm-btn:hover{ filter:brightness(1.1); }
-  button.confirm-btn:active{ transform: scale(0.97); }
-  button.confirm-btn:disabled{ opacity:.5; cursor:not-allowed; }
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: auto -18% -48% auto;
+        width: 320px;
+        height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(232, 80, 2, 0.24), transparent 66%);
+        pointer-events: none;
+      }
 
-  @keyframes btn-pulse{
-    0%, 100% { box-shadow: 0 0 0 0 rgba(232,80,2,0.55), 0 0 16px rgba(241,96,1,0.25); }
-    50% { box-shadow: 0 0 0 9px rgba(232,80,2,0), 0 0 26px rgba(241,96,1,0.6); }
-  }
-  @keyframes btn-shine{
-    0% { left: -160%; }
-    45% { left: 160%; }
-    100% { left: 160%; }
-  }
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(249, 249, 249, 0.12);
+        color: var(--muted);
+        font-size: 0.95rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: rgba(255, 255, 255, 0.03);
+      }
 
-  .form-msg{ margin-top:14px; font-size:13.5px; min-height:18px; text-align:center; }
-  .form-msg.error{ color:#ff8a75; }
+      .eyebrow::before {
+        content: "";
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: linear-gradient(180deg, var(--accent-2), var(--accent-3));
+        box-shadow: 0 0 16px rgba(241, 96, 1, 0.8);
+      }
 
-  /* Success confirmation state */
-  .success-state{ display:none; text-align:center; }
-  .success-state.show{ display:block; }
-  .success-check{
-    width:56px; height:56px; margin:0 auto 14px;
-    border-radius:50%;
-    background: linear-gradient(180deg, var(--orange-light), var(--orange-deep));
-    display:flex; align-items:center; justify-content:center;
-    font-size:28px;
-  }
-  .success-title{ font-family:'Cinzel',serif; font-size:19px; color:var(--white); margin-bottom:6px; }
-  .success-detail{ color: var(--light-gray); font-size:14px; margin-bottom:18px; }
-  .success-detail b{ color: var(--orange-light); }
-  .cancel-link{
-    background:none; border:1px solid var(--dark-gray); color:var(--light-gray);
-    font-size:13px; padding:9px 16px; border-radius:9px; cursor:pointer; font-family:inherit;
-  }
-  .cancel-link:hover{ border-color: var(--gray); color: var(--white); }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 22px;
+        align-items: stretch;
+        margin-top: 18px;
+      }
 
-  /* ---------- PROGRESS ---------- */
-  .slots-panel{
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 16px;
-    padding: 22px 24px;
-    margin: 0 0 28px;
-  }
-  .slots-top{
-    display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px;
-  }
-  .slots-label{ font-size:13px; text-transform:uppercase; letter-spacing:1.5px; color:var(--light-gray); }
-  .slots-count{ font-family:'Cinzel',serif; font-size:22px; font-weight:700; color: var(--orange-light); }
-  .slots-count span{ color: var(--gray); font-size:16px; font-weight:500; }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: "Orbitron", sans-serif;
+      }
 
-  .ancient-bar{
-    position: relative;
-    height: 18px;
-    border-radius: 9px;
-    background: #0a0a0a;
-    border: 1px solid var(--panel-border);
-    overflow: hidden;
-    display:flex;
-  }
-  .ancient-bar .fill-main{
-    height: 100%;
-    transition: width .5s ease;
-    background: linear-gradient(90deg, var(--orange-deep), var(--orange), var(--orange-light));
-  }
-  .ancient-bar .fill-empty{ flex:1; background: repeating-linear-gradient(45deg, #0f0f0f, #0f0f0f 6px, #141414 6px, #141414 12px); }
-  .slots-note{ margin-top:10px; font-size:12.5px; color:var(--gray); text-align:center; }
+      h1 {
+        font-size: clamp(2rem, 4vw, 4rem);
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+        max-width: 12ch;
+      }
 
-  .full-banner{
-    margin-top: 14px;
-    text-align:center;
-    font-size: 13px;
-    background: rgba(193,8,1,0.12);
-    border: 1px solid var(--orange-deep);
-    color: #ff8a75;
-    padding: 8px 12px;
-    border-radius: 8px;
-  }
+      .hero-copy p {
+        margin: 16px 0 0;
+        max-width: 58ch;
+        font-size: 1.18rem;
+        line-height: 1.45;
+        color: #d9d9d9;
+      }
 
-  /* ---------- ROSTER ---------- */
-  .roster-title{
-    font-family:'Cinzel',serif;
-    font-size:15px;
-    color:var(--light-gray);
-    text-transform:uppercase;
-    letter-spacing:2px;
-    text-align:center;
-    margin: 6px 0 16px;
-  }
-  .roster-col{
-    background: var(--panel);
-    border:1px solid var(--panel-border);
-    border-radius:14px;
-    overflow:hidden;
-  }
-  .roster-head{
-    padding: 12px 16px;
-    font-family:'Cinzel',serif;
-    font-size:13px;
-    letter-spacing:1.5px;
-    text-transform:uppercase;
-    font-weight:600;
-    display:flex; justify-content:space-between; align-items:center;
-    background: linear-gradient(90deg, rgba(232,80,2,.15), transparent);
-    color: var(--orange-light);
-    border-bottom:1px solid var(--panel-border);
-  }
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 22px;
+      }
 
-  .roster-list{ list-style:none; margin:0; padding:8px; min-height:60px; }
-  .roster-list li{
-    display:flex; align-items:center; gap:10px;
-    padding: 10px 10px;
-    border-radius:8px;
-    font-size:14.5px;
-    cursor:pointer;
-  }
-  .roster-list li:hover{ background: rgba(255,255,255,0.04); }
-  .roster-list li .num{ color:var(--gray); font-size:12px; width:22px; text-align:right; }
-  .roster-list .empty-slot{ color: var(--gray); font-style:italic; font-size:13.5px; }
-  .roster-list li .rm{ margin-left:auto; opacity:0; font-size:12px; color:var(--gray); }
-  .roster-list li:hover .rm{ opacity:1; }
-  .roster-list li.mine{ background: rgba(232,80,2,0.08); }
-  .roster-list li.mine .num{ color: var(--orange-light); }
+      .meta-card,
+      .countdown-card {
+        padding: 18px 20px;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+      }
 
-  .waitlist{
-    margin-top:18px;
-    background: var(--panel);
-    border:1px dashed var(--panel-border);
-    border-radius:14px;
-    padding: 14px 16px;
-  }
-  .waitlist h3{
-    font-family:'Cinzel',serif; font-size:13px; letter-spacing:1.5px; text-transform:uppercase;
-    color: var(--orange-light); margin: 0 0 8px;
-  }
-  .waitlist ul{ list-style:none; margin:0; padding:0; }
-  .waitlist li{
-    padding:8px 4px; font-size:14px; display:flex; gap:10px; cursor:pointer; border-radius:6px;
-  }
-  .waitlist li:hover{ background: rgba(255,255,255,0.04); }
-  .waitlist li .num{ color:var(--gray); font-size:12px; width:18px; text-align:right; }
+      .meta-card strong,
+      .countdown-card strong {
+        display: block;
+        margin-top: 6px;
+        font-size: 1.45rem;
+        color: var(--text);
+      }
 
-  footer{ text-align:center; color:var(--gray); font-size:12px; margin-top:36px; }
-</style>
-</head>
-<body>
-<div class="wrap">
+      .label {
+        color: var(--muted);
+        font-size: 0.92rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
 
-  <div class="hero">
-    <div class="eyebrow">Confirmação de Presença</div>
-    <h1>Nonstop Clássico Dota 2</h1>
-    <div class="subtitle">Confirme sua vaga até o dia 17 de Julho</div>
-    <div class="date-pill">
-      Evento em <b>21 de agosto de 2026</b> <span class="countdown" id="countdown"></span>
-    </div>
-  </div>
+      .action-card {
+        position: relative;
+        padding: 24px;
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(232, 80, 2, 0.3);
+        background:
+          linear-gradient(180deg, rgba(241, 96, 1, 0.14), rgba(193, 8, 1, 0.06)),
+          rgba(8, 8, 8, 0.92);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
 
-  <div class="action-panel">
-    <div id="form-state">
-      <h2>Digite seu nick e confirme</h2>
-      <p class="helper">É só isso — o nick e um clique garantem sua vaga.</p>
-      <div class="form-row">
-        <input type="text" id="name-input" placeholder="Seu nick" maxlength="24" autocomplete="off">
-        <button class="confirm-btn" id="confirm-btn">Confirmar presença</button>
-      </div>
-      <div class="form-msg" id="form-msg"></div>
-    </div>
+      .action-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(241, 96, 1, 0.72), rgba(193, 8, 1, 0.18));
+        -webkit-mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
 
-    <div id="success-state" class="success-state">
-      <div class="success-check">✓</div>
-      <div class="success-title">Vaga reservada!</div>
-      <div class="success-detail">Nick: <b id="success-name"></b> — você é o <b id="success-slot"></b> confirmado.</div>
-      <button class="cancel-link" id="cancel-btn">Cancelar minha vaga</button>
-    </div>
-  </div>
+      .action-card h2 {
+        font-size: 1.45rem;
+      }
 
-  <div class="slots-panel">
-    <div class="slots-top">
-      <div class="slots-label">Vagas preenchidas</div>
-      <div class="slots-count"><span id="count-num">0</span><span> / 20</span></div>
-    </div>
-    <div class="ancient-bar" id="ancient-bar">
-      <div class="fill-empty"></div>
-    </div>
-    <div class="slots-note">A vaga só é garantida após a confirmação acima.</div>
-    <div class="full-banner" id="full-banner" style="display:none;">As 20 vagas foram preenchidas. Novas confirmações entram na lista de espera.</div>
-  </div>
+      .action-card p {
+        margin: 8px 0 0;
+        color: #dddddd;
+        font-size: 1.05rem;
+      }
 
-  <div class="roster-title">Confirmados</div>
-  <div class="roster-col">
-    <div class="roster-head">Jogadores <span id="roster-count">0/20</span></div>
-    <ul class="roster-list" id="roster-list"></ul>
-  </div>
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        margin-top: 20px;
+      }
 
-  <div class="waitlist" id="waitlist-panel" style="display:none;">
-    <h3>Lista de espera</h3>
-    <ul id="waitlist-list"></ul>
-  </div>
+      .field,
+      .button,
+      .secondary-button,
+      .remove-button {
+        font: inherit;
+      }
 
-  <footer>Toque no seu nome na lista para cancelar sua confirmação.</footer>
-</div>
+      .field {
+        width: 100%;
+        min-height: 60px;
+        padding: 0 18px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text);
+        font-size: 1.2rem;
+        transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+      }
 
-<script>
-const MAX_SLOTS = 20;
-const EVENT_DATE = new Date('2026-08-21T00:00:00');
+      .field:focus {
+        outline: none;
+        border-color: rgba(241, 96, 1, 0.9);
+        background: rgba(255, 255, 255, 0.09);
+        transform: translateY(-1px);
+      }
 
-let players = []; // {name, ts}
-let myName = null; // tracked only for this browsing session
-let hasLoadedOnce = false;
-let loadToken = 0;
-let writeInProgress = false;
+      .field::placeholder {
+        color: #8d8d8d;
+      }
 
-function updateCountdown(){
-  const now = new Date();
-  const diffMs = EVENT_DATE - now;
-  const el = document.getElementById('countdown');
-  if(diffMs <= 0){ el.textContent = '(hoje é o dia!)'; return; }
-  const days = Math.floor(diffMs / (1000*60*60*24));
-  el.textContent = `(faltam ${days} dias)`;
-}
-updateCountdown();
-setInterval(updateCountdown, 1000*60*60);
+      .button,
+      .secondary-button,
+      .remove-button {
+        border: 0;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease, background 160ms ease;
+      }
 
-async function loadPlayers(){
-  // Skip background refreshes while a confirm/cancel is being written to
-  // avoid a slow read landing in the middle of that write.
-  if(writeInProgress) return;
+      .button {
+        min-width: 220px;
+        padding: 0 24px;
+        background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
+        color: var(--text);
+        font-family: "Orbitron", sans-serif;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        box-shadow: 0 16px 28px rgba(232, 80, 2, 0.24);
+      }
 
-  const token = ++loadToken;
-  let fresh = null;
-  try{
-    const res = await fetch('/api/players');
-    if(!res.ok) throw new Error('bad response: ' + res.status);
-    const data = await res.json();
-    fresh = Array.isArray(data.players) ? data.players : [];
-  }catch(e){
-    console.error('Falha ao carregar', e);
-    // Never wipe the list we already know about because of a transient
-    // network error — only start from empty on the very first load.
-    fresh = hasLoadedOnce ? null : [];
-  }
+      .button:hover,
+      .secondary-button:hover,
+      .remove-button:hover {
+        transform: translateY(-1px);
+      }
 
-  // A newer load already started/finished while this one was in flight —
-  // this response is stale, never let it overwrite fresher data.
-  if(token !== loadToken) return;
+      .button:disabled,
+      .secondary-button:disabled,
+      .remove-button:disabled,
+      .field:disabled {
+        opacity: 0.6;
+        cursor: wait;
+        transform: none;
+      }
 
-  if(fresh !== null){
-    players = fresh;
-    hasLoadedOnce = true;
-  }
-  render();
-}
+      .status {
+        min-height: 22px;
+        margin-top: 12px;
+        font-size: 1rem;
+        color: var(--muted);
+      }
 
-function render(){
-  const confirmed = players.slice(0, MAX_SLOTS);
-  const waitlist = players.slice(MAX_SLOTS);
+      .status[data-tone="error"] {
+        color: var(--danger);
+      }
 
-  document.getElementById('count-num').textContent = confirmed.length;
+      .status[data-tone="success"] {
+        color: var(--success);
+      }
 
-  const bar = document.getElementById('ancient-bar');
-  const pct = confirmed.length / MAX_SLOTS;
-  bar.innerHTML = '';
-  if(confirmed.length){
-    const f = document.createElement('div');
-    f.className = 'fill-main';
-    f.style.width = (pct * 100) + '%';
-    bar.appendChild(f);
-  }
-  if(pct < 1){
-    const e = document.createElement('div');
-    e.className = 'fill-empty';
-    bar.appendChild(e);
-  }
+      .success-card {
+        display: none;
+        margin-top: 16px;
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid rgba(249, 249, 249, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+      }
 
-  document.getElementById('full-banner').style.display = confirmed.length >= MAX_SLOTS ? 'block' : 'none';
-  document.getElementById('roster-count').textContent = confirmed.length + '/20';
+      .success-card.is-visible {
+        display: block;
+        animation: reveal 220ms ease;
+      }
 
-  renderRosterList(confirmed);
+      .success-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(249, 249, 249, 0.08);
+        color: var(--text);
+        font-size: 0.94rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
 
-  const waitPanel = document.getElementById('waitlist-panel');
-  const waitList = document.getElementById('waitlist-list');
-  if(waitlist.length){
-    waitPanel.style.display = 'block';
-    waitList.innerHTML = '';
-    waitlist.forEach((p, i) => {
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="num">${i+1}.</span> <span>${escapeHtml(p.name)}</span>`;
-      li.onclick = () => removePlayer(p.name);
-      waitList.appendChild(li);
-    });
-  } else {
-    waitPanel.style.display = 'none';
-  }
+      .success-card h3 {
+        margin-top: 14px;
+        font-size: 1.55rem;
+      }
 
-  // keep success panel in sync if my name was removed elsewhere
-  if(myName && !players.some(p => p.name === myName)){
-    myName = null;
-    showFormState();
-  }
-}
+      .success-card p {
+        margin: 10px 0 0;
+        font-size: 1.1rem;
+        line-height: 1.45;
+        color: #e2e2e2;
+      }
 
-function renderRosterList(list){
-  const ul = document.getElementById('roster-list');
-  ul.innerHTML = '';
-  for(let i=0;i<MAX_SLOTS;i++){
-    const li = document.createElement('li');
-    if(list[i]){
-      const isMine = list[i].name === myName;
-      if(isMine) li.classList.add('mine');
-      li.innerHTML = `<span class="num">${i+1}.</span> <span>${escapeHtml(list[i].name)}</span> <span class="rm">cancelar ✕</span>`;
-      li.onclick = () => removePlayer(list[i].name);
-    } else {
-      li.innerHTML = `<span class="num">${i+1}.</span> <span class="empty-slot">Aguardando jogador...</span>`;
-    }
-    ul.appendChild(li);
-  }
-}
+      .success-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
 
-function escapeHtml(str){
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
-}
+      .secondary-button,
+      .remove-button {
+        min-height: 48px;
+        padding: 0 16px;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+      }
 
-function showSuccessState(name, slotIndex, isWaitlist){
-  document.getElementById('form-state').style.display = 'none';
-  document.getElementById('success-state').classList.add('show');
-  document.getElementById('success-name').textContent = name;
-  const slotLabel = document.getElementById('success-slot');
-  const title = document.querySelector('.success-title');
-  const check = document.querySelector('.success-check');
-  if(isWaitlist){
-    title.textContent = 'Você está na lista de espera';
-    slotLabel.textContent = `${slotIndex + 1}º`;
-    check.textContent = '!';
-  } else {
-    title.textContent = 'Vaga reservada!';
-    slotLabel.textContent = `${slotIndex + 1}º`;
-    check.textContent = '✓';
-  }
-}
+      .secondary-button {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
 
-function showFormState(){
-  document.getElementById('form-state').style.display = 'block';
-  document.getElementById('success-state').classList.remove('show');
-  document.getElementById('name-input').value = '';
-  document.getElementById('form-msg').textContent = '';
-}
+      .remove-button {
+        border: 1px solid rgba(232, 80, 2, 0.22);
+      }
 
-async function confirmPlayer(){
-  const input = document.getElementById('name-input');
-  const msg = document.getElementById('form-msg');
-  const btn = document.getElementById('confirm-btn');
-  const name = input.value.trim();
+      .section-grid {
+        display: grid;
+        grid-template-columns: 0.95fr 1.05fr;
+        gap: 22px;
+        margin-top: 22px;
+      }
 
-  msg.textContent = '';
-  msg.className = 'form-msg';
+      .panel {
+        padding: 24px;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--line);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
 
-  if(!name){
-    msg.textContent = 'Digite seu nick antes de confirmar.';
-    msg.classList.add('error');
-    return;
-  }
+      .panel h2 {
+        font-size: 1.35rem;
+      }
 
-  btn.disabled = true;
-  writeInProgress = true;
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
 
-  try{
-    const res = await fetch('/api/players', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'confirm', name })
-    });
-    const data = await res.json();
+      .progress-copy {
+        color: #dedede;
+        font-size: 1.08rem;
+        line-height: 1.4;
+      }
 
-    if(!res.ok){
-      throw new Error(data.error || 'Falha ao confirmar.');
-    }
+      .progress-bar {
+        width: 100%;
+        height: 16px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
 
-    if(!data.ok && data.reason === 'duplicate'){
-      msg.textContent = 'Esse nick já confirmou presença.';
-      msg.classList.add('error');
-      players = Array.isArray(data.players) ? data.players : players;
-      writeInProgress = false;
-      render();
-      btn.disabled = false;
-      return;
-    }
+      .progress-fill {
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--accent-2), var(--accent-3));
+        transition: width 220ms ease;
+      }
 
-    players = data.players;
-    myName = name;
-    writeInProgress = false;
-    render();
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+        color: var(--muted);
+      }
 
-    const slotIndex = typeof data.slotIndex === 'number' ? data.slotIndex : players.findIndex(p => p.name === name);
-    showSuccessState(name, slotIndex, slotIndex >= MAX_SLOTS);
-  }catch(e){
-    console.error(e);
-    msg.textContent = 'Não foi possível confirmar agora. Tente novamente em instantes.';
-    msg.classList.add('error');
-    writeInProgress = false;
-  }
+      .legend-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
 
-  btn.disabled = false;
-}
+      .legend-chip::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.22);
+      }
 
-async function removePlayer(name){
-  if(!confirm(`Cancelar a confirmação de "${name}"?`)) return;
-  writeInProgress = true;
-  try{
-    const res = await fetch('/api/players', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'remove', name })
-    });
-    const data = await res.json();
-    if(!res.ok) throw new Error(data.error || 'Falha ao cancelar.');
-    players = data.players;
-    if(name === myName){ myName = null; showFormState(); }
-  }catch(e){
-    console.error(e);
-  }
-  writeInProgress = false;
-  render();
-}
+      .legend-chip.is-self::before {
+        background: linear-gradient(180deg, var(--accent-2), var(--accent-3));
+      }
 
-document.getElementById('confirm-btn').addEventListener('click', confirmPlayer);
-document.getElementById('name-input').addEventListener('keydown', (e) => {
-  if(e.key === 'Enter') confirmPlayer();
-});
-document.getElementById('cancel-btn').addEventListener('click', () => {
-  if(myName) removePlayer(myName);
-});
+      .legend-chip.is-open::before {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+      }
 
-loadPlayers();
-// keep the roster fresh for everyone viewing the page — near-live view
-setInterval(loadPlayers, 4000);
-document.addEventListener('visibilitychange', () => {
-  if(document.visibilityState === 'visible') loadPlayers();
-});
-</script>
-</body>
+      .list-stack {
+        display: grid;
+        gap: 20px;
+      }
+
+      .players-list,
+      .waitlist {
+        display: grid;
+        gap: 10px;
+      }
+
+      .player-slot,
+      .wait-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 14px;
+        min-height: 62px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+        animation: reveal 180ms ease;
+      }
+
+      .player-slot.is-empty {
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.015);
+      }
+
+      .player-slot.is-self,
+      .wait-item.is-self {
+        border-color: rgba(241, 96, 1, 0.52);
+        background: linear-gradient(90deg, rgba(241, 96, 1, 0.15), rgba(255, 255, 255, 0.03));
+      }
+
+      .slot-index {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        font-family: "Orbitron", sans-serif;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 0.92rem;
+      }
+
+      .player-main {
+        min-width: 0;
+      }
+
+      .player-name {
+        display: block;
+        font-size: 1.15rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .player-meta {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .waitlist-wrap[hidden] {
+        display: none;
+      }
+
+      .footer-note {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 0.96rem;
+      }
+
+      @keyframes reveal {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .hero-grid,
+        .section-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .shell {
+          width: min(100vw - 20px, 100%);
+          padding-top: 20px;
+          padding-bottom: 34px;
+        }
+
+        .hero,
+        .panel,
+        .action-card {
+          padding: 20px;
+          border-radius: 24px;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .button {
+          min-height: 58px;
+          width: 100%;
+        }
+
+        .player-slot,
+        .wait-item {
+          grid-template-columns: auto 1fr;
+        }
+
+        .remove-button {
+          grid-column: 1 / -1;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <span class="eyebrow">Torneio amador | Vagas ao vivo</span>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <h1>Nonstop Clássico Dota 2</h1>
+            <p>
+              Digite seu nick e confirme em segundos. As 20 primeiras confirmações reservam vaga;
+              depois disso, a entrada vai automaticamente para a lista de espera.
+            </p>
+            <div class="meta-row">
+              <div class="meta-card">
+                <span class="label">Data do evento</span>
+                <strong>21/08/2026</strong>
+              </div>
+              <div class="countdown-card">
+                <span class="label">Contagem regressiva</span>
+                <strong id="countdown">Calculando...</strong>
+              </div>
+            </div>
+          </div>
+
+          <section class="action-card" aria-labelledby="confirm-title">
+            <h2 id="confirm-title">Reserve sua presença</h2>
+            <p>Use o mesmo nick que você joga. Não precisa login.</p>
+
+            <form id="confirm-form" novalidate>
+              <div class="form-row">
+                <input
+                  class="field"
+                  id="name-input"
+                  name="name"
+                  type="text"
+                  autocomplete="off"
+                  maxlength="32"
+                  placeholder="Seu nick no Dota"
+                  aria-label="Seu nick no Dota"
+                />
+                <button class="button" id="confirm-button" type="submit">Confirmar presença</button>
+              </div>
+            </form>
+
+            <div class="status" id="status" role="status" aria-live="polite"></div>
+
+            <section class="success-card" id="success-card" aria-live="polite">
+              <span class="success-badge" id="success-badge">Reserva processada</span>
+              <h3 id="success-title">Vaga reservada!</h3>
+              <p id="success-copy"></p>
+              <div class="success-actions">
+                <button class="remove-button" id="success-remove" type="button">Cancelar minha confirmação</button>
+                <button class="secondary-button" id="success-edit" type="button">Confirmar outro nick</button>
+              </div>
+            </section>
+          </section>
+        </div>
+      </section>
+
+      <section class="section-grid">
+        <section class="panel" aria-labelledby="progress-title">
+          <div class="panel-header">
+            <h2 id="progress-title">Panorama das vagas</h2>
+            <span class="label" id="live-indicator">Atualiza a cada 4s</span>
+          </div>
+          <p class="progress-copy" id="progress-copy">Carregando confirmações...</p>
+          <div class="progress-bar" aria-hidden="true">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="legend">
+            <span class="legend-chip is-self">Seu nick nesta sessão</span>
+            <span class="legend-chip is-open">Slot aguardando jogador</span>
+          </div>
+          <p class="footer-note">
+            As vagas seguem a ordem de chegada. Se o limite fechar enquanto você envia, sua confirmação
+            entra na fila automaticamente.
+          </p>
+        </section>
+
+        <section class="panel" aria-labelledby="list-title">
+          <div class="panel-header">
+            <h2 id="list-title">Lista de confirmados</h2>
+            <span class="label" id="confirmed-count">0/20</span>
+          </div>
+
+          <div class="list-stack">
+            <div class="players-list" id="players-list"></div>
+
+            <section class="waitlist-wrap" id="waitlist-wrap" hidden aria-labelledby="waitlist-title">
+              <div class="panel-header">
+                <h3 id="waitlist-title">Lista de espera</h3>
+                <span class="label" id="waitlist-count">0 na fila</span>
+              </div>
+              <div class="waitlist" id="waitlist"></div>
+            </section>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const EVENT_DATE_ISO = "2026-08-21T00:00:00-03:00";
+        const SLOT_LIMIT = 20;
+        const POLL_INTERVAL_MS = 4000;
+
+        const state = {
+          players: [],
+          loading: true,
+          currentSessionNick: null,
+          requestToken: 0,
+          lastAppliedToken: 0,
+          activeAction: null,
+        };
+
+        const els = {
+          countdown: document.getElementById("countdown"),
+          confirmForm: document.getElementById("confirm-form"),
+          nameInput: document.getElementById("name-input"),
+          confirmButton: document.getElementById("confirm-button"),
+          status: document.getElementById("status"),
+          successCard: document.getElementById("success-card"),
+          successBadge: document.getElementById("success-badge"),
+          successTitle: document.getElementById("success-title"),
+          successCopy: document.getElementById("success-copy"),
+          successRemove: document.getElementById("success-remove"),
+          successEdit: document.getElementById("success-edit"),
+          progressCopy: document.getElementById("progress-copy"),
+          progressFill: document.getElementById("progress-fill"),
+          playersList: document.getElementById("players-list"),
+          confirmedCount: document.getElementById("confirmed-count"),
+          waitlistWrap: document.getElementById("waitlist-wrap"),
+          waitlist: document.getElementById("waitlist"),
+          waitlistCount: document.getElementById("waitlist-count"),
+          liveIndicator: document.getElementById("live-indicator"),
+        };
+
+        function normalizeName(value) {
+          return (value || "").trim().replace(/\s+/g, " ");
+        }
+
+        function compareNames(a, b) {
+          return normalizeName(a).toLocaleLowerCase("pt-BR") === normalizeName(b).toLocaleLowerCase("pt-BR");
+        }
+
+        function formatOrdinal(index) {
+          return `${index + 1}º`;
+        }
+
+        function formatDateTime(timestamp) {
+          return new Intl.DateTimeFormat("pt-BR", {
+            dateStyle: "short",
+            timeStyle: "short",
+          }).format(new Date(timestamp));
+        }
+
+        function setStatus(message, tone) {
+          els.status.textContent = message || "";
+          if (tone) {
+            els.status.dataset.tone = tone;
+          } else {
+            delete els.status.dataset.tone;
+          }
+        }
+
+        function setBusy(isBusy) {
+          const disabled = Boolean(isBusy);
+          els.confirmButton.disabled = disabled;
+          els.nameInput.disabled = disabled;
+          els.successRemove.disabled = disabled;
+        }
+
+        function showSuccessCard(entryIndex, name) {
+          const isReserved = entryIndex < SLOT_LIMIT;
+          els.successBadge.textContent = isReserved ? "Reserva confirmada" : "Lista de espera";
+          els.successTitle.textContent = isReserved ? "Vaga reservada!" : "Você entrou na fila.";
+          els.successCopy.textContent = isReserved
+            ? `${name} ficou com a ${formatOrdinal(entryIndex)} vaga confirmada.`
+            : `${name} entrou na ${formatOrdinal(entryIndex - SLOT_LIMIT)} posição da lista de espera.`;
+          els.successCard.classList.add("is-visible");
+          els.confirmForm.hidden = true;
+          setStatus("");
+        }
+
+        function hideSuccessCard() {
+          els.successCard.classList.remove("is-visible");
+          els.confirmForm.hidden = false;
+        }
+
+        function render() {
+          const confirmed = state.players.slice(0, SLOT_LIMIT);
+          const waitlist = state.players.slice(SLOT_LIMIT);
+          const fillPct = Math.min((confirmed.length / SLOT_LIMIT) * 100, 100);
+
+          els.progressFill.style.width = `${fillPct}%`;
+          els.confirmedCount.textContent = `${confirmed.length}/${SLOT_LIMIT}`;
+
+          if (confirmed.length < SLOT_LIMIT) {
+            els.progressCopy.textContent = `${confirmed.length}/${SLOT_LIMIT} vagas preenchidas. Ainda há ${
+              SLOT_LIMIT - confirmed.length
+            } vagas disponíveis.`;
+          } else if (waitlist.length === 0) {
+            els.progressCopy.textContent = `${SLOT_LIMIT}/${SLOT_LIMIT} vagas preenchidas. Novas confirmações entram na fila.`;
+          } else {
+            els.progressCopy.textContent = `${SLOT_LIMIT}/${SLOT_LIMIT} vagas preenchidas. ${waitlist.length} jogador(es) já aguardam na lista de espera.`;
+          }
+
+          els.playersList.innerHTML = "";
+
+          for (let i = 0; i < SLOT_LIMIT; i += 1) {
+            const player = confirmed[i];
+            const slot = document.createElement("article");
+            slot.className = "player-slot";
+
+            if (!player) {
+              slot.classList.add("is-empty");
+              slot.innerHTML = `
+                <span class="slot-index">${i + 1}</span>
+                <div class="player-main">
+                  <strong class="player-name">Aguardando jogador...</strong>
+                  <span class="player-meta">Este slot ainda está livre.</span>
+                </div>
+              `;
+            } else {
+              const isSelf = state.currentSessionNick && compareNames(state.currentSessionNick, player.name);
+              if (isSelf) {
+                slot.classList.add("is-self");
+              }
+
+              slot.innerHTML = `
+                <span class="slot-index">${i + 1}</span>
+                <div class="player-main">
+                  <strong class="player-name">${escapeHtml(player.name)}</strong>
+                  <span class="player-meta">Confirmado em ${formatDateTime(player.ts)}</span>
+                </div>
+                <button class="remove-button" type="button" data-remove-name="${escapeAttribute(player.name)}">
+                  Cancelar
+                </button>
+              `;
+            }
+
+            els.playersList.appendChild(slot);
+          }
+
+          els.waitlist.innerHTML = "";
+          if (waitlist.length > 0) {
+            els.waitlistWrap.hidden = false;
+            els.waitlistCount.textContent = `${waitlist.length} na fila`;
+
+            waitlist.forEach((player, index) => {
+              const row = document.createElement("article");
+              row.className = "wait-item";
+              if (state.currentSessionNick && compareNames(state.currentSessionNick, player.name)) {
+                row.classList.add("is-self");
+              }
+
+              row.innerHTML = `
+                <span class="slot-index">${index + 1}</span>
+                <div class="player-main">
+                  <strong class="player-name">${escapeHtml(player.name)}</strong>
+                  <span class="player-meta">Entrou na fila em ${formatDateTime(player.ts)}</span>
+                </div>
+                <button class="remove-button" type="button" data-remove-name="${escapeAttribute(player.name)}">
+                  Cancelar
+                </button>
+              `;
+              els.waitlist.appendChild(row);
+            });
+          } else {
+            els.waitlistWrap.hidden = true;
+          }
+
+          if (state.currentSessionNick) {
+            const selfIndex = state.players.findIndex((player) => compareNames(player.name, state.currentSessionNick));
+            if (selfIndex === -1 && !state.activeAction) {
+              state.currentSessionNick = null;
+              hideSuccessCard();
+            }
+          }
+        }
+
+        function escapeHtml(value) {
+          return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#39;");
+        }
+
+        function escapeAttribute(value) {
+          return escapeHtml(value);
+        }
+
+        async function fetchPlayers(options = {}) {
+          const { silent = false } = options;
+          const token = ++state.requestToken;
+
+          if (!silent) {
+            els.liveIndicator.textContent = "Sincronizando...";
+          }
+
+          try {
+            const response = await fetch("/api/players", { cache: "no-store" });
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.error || "Falha ao carregar as confirmações.");
+            }
+
+            if (token < state.requestToken) {
+              return;
+            }
+
+            state.lastAppliedToken = token;
+            state.players = Array.isArray(data.players) ? data.players : [];
+            state.loading = false;
+            render();
+            els.liveIndicator.textContent = "Atualizado ao vivo";
+          } catch (error) {
+            if (state.loading) {
+              state.players = [];
+              state.loading = false;
+              render();
+              setStatus("Não foi possível carregar agora. Tente novamente em instantes.", "error");
+            } else if (!silent) {
+              setStatus("Falha ao sincronizar a lista. Mantivemos os dados já exibidos.", "error");
+            }
+            els.liveIndicator.textContent = "Tentando novamente...";
+          }
+        }
+
+        async function submitAction(payload) {
+          const response = await fetch("/api/players", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "Não foi possível concluir a ação.");
+          }
+
+          state.players = Array.isArray(data.players) ? data.players : state.players;
+          render();
+          return data;
+        }
+
+        async function handleConfirm(event) {
+          event.preventDefault();
+          const name = normalizeName(els.nameInput.value);
+
+          if (!name) {
+            setStatus("Digite um nick antes de confirmar.", "error");
+            els.nameInput.focus();
+            return;
+          }
+
+          state.activeAction = "confirm";
+          setBusy(true);
+          setStatus("Confirmando presença...", "success");
+
+          try {
+            const data = await submitAction({
+              action: "confirm",
+              name,
+            });
+
+            state.currentSessionNick = data.player?.name || name;
+            els.nameInput.value = "";
+            showSuccessCard(data.slotIndex, state.currentSessionNick);
+            await fetchPlayers({ silent: true });
+          } catch (error) {
+            setStatus(error.message || "Falha de rede. Tente novamente.", "error");
+          } finally {
+            state.activeAction = null;
+            setBusy(false);
+          }
+        }
+
+        async function removeByName(name) {
+          const normalized = normalizeName(name);
+          if (!normalized) {
+            return;
+          }
+
+          const confirmed = window.confirm(`Remover ${normalized} da lista?`);
+          if (!confirmed) {
+            return;
+          }
+
+          state.activeAction = "remove";
+          setBusy(true);
+          setStatus("Cancelando confirmação...", "success");
+
+          try {
+            await submitAction({
+              action: "remove",
+              name: normalized,
+            });
+
+            if (state.currentSessionNick && compareNames(state.currentSessionNick, normalized)) {
+              state.currentSessionNick = null;
+              hideSuccessCard();
+            }
+
+            setStatus("Confirmação cancelada com sucesso.", "success");
+            await fetchPlayers({ silent: true });
+          } catch (error) {
+            setStatus(error.message || "Não foi possível cancelar agora.", "error");
+          } finally {
+            state.activeAction = null;
+            setBusy(false);
+          }
+        }
+
+        function handleListClick(event) {
+          const button = event.target.closest("[data-remove-name]");
+          if (!button) {
+            return;
+          }
+
+          removeByName(button.getAttribute("data-remove-name"));
+        }
+
+        function updateCountdown() {
+          const now = Date.now();
+          const target = new Date(EVENT_DATE_ISO).getTime();
+          const diff = target - now;
+
+          if (diff <= 0) {
+            els.countdown.textContent = "Evento em andamento";
+            return;
+          }
+
+          const totalMinutes = Math.floor(diff / 60000);
+          const days = Math.floor(totalMinutes / (60 * 24));
+          const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+          const minutes = totalMinutes % 60;
+          els.countdown.textContent = `${days}d ${hours}h ${minutes}m`;
+        }
+
+        els.confirmForm.addEventListener("submit", handleConfirm);
+        els.playersList.addEventListener("click", handleListClick);
+        els.waitlist.addEventListener("click", handleListClick);
+        els.successEdit.addEventListener("click", () => {
+          hideSuccessCard();
+          setStatus("");
+          els.nameInput.focus();
+        });
+        els.successRemove.addEventListener("click", () => {
+          if (state.currentSessionNick) {
+            removeByName(state.currentSessionNick);
+          }
+        });
+
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") {
+            fetchPlayers({ silent: true });
+          }
+        });
+
+        updateCountdown();
+        window.setInterval(updateCountdown, 30000);
+        fetchPlayers();
+        window.setInterval(() => {
+          fetchPlayers({ silent: true });
+        }, POLL_INTERVAL_MS);
+      })();
+    </script>
+  </body>
 </html>

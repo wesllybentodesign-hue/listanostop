@@ -1,52 +1,80 @@
-# Confirmação — Nonstop Clássico Dota 2
+# Nonstop Classico Dota 2
 
-Site simples para os jogadores confirmarem presença nas 20 vagas do evento (21/08/2026).
+Site de pagina unica para confirmar presenca no campeonato, com 20 vagas fixas, lista de espera automatica e atualizacao ao vivo via polling.
 
-- `index.html` — a página (front-end).
-- `api/players.js` — função serverless que guarda a lista de confirmados, compartilhada entre todos que acessarem o link.
-- `package.json` — dependência da função (`@vercel/kv`).
+## Estrutura
 
-> **Importante:** este projeto guarda os dados no **Vercel KV** (um banco chave-valor gratuito no plano free da Vercel), usando uma lista Redis com `rpush` — cada confirmação é adicionada de forma atômica, então mesmo que várias pessoas confirmem ao mesmo tempo, ninguém sobrescreve a confirmação de outra. Sem o KV configurado, a página carrega mas ninguém consegue salvar confirmação. Siga os passos abaixo — leva uns 5 minutos.
+- `index.html`: interface completa em HTML/CSS/JS puro.
+- `api/players.js`: rota serverless com `GET`, `POST { action: "confirm" }` e `POST { action: "remove" }`.
+- `package.json`: scripts para rodar localmente com Vercel.
+- `vercel.json`: configuracao minima do deploy.
 
-## 1. Subir no GitHub
+## Como funciona a persistencia
 
-1. Crie um repositório novo no GitHub (pode ser privado ou público).
-2. Envie esta pasta inteira para o repositório. Se você tem o Git instalado:
-   ```bash
-   cd dota-confirmacao
-   git init
-   git add .
-   git commit -m "Site de confirmação do evento"
-   git branch -M main
-   git remote add origin https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
-   git push -u origin main
-   ```
-   Se preferir, dá pra fazer isso direto pelo site do GitHub, usando "Upload files" e arrastando os arquivos.
+- As confirmacoes ficam numa lista Redis/KV em `nonstop-classico-dota2:players`.
+- Os nicks normalizados ficam num set em `nonstop-classico-dota2:names`.
+- A confirmacao usa um script `EVAL` para fazer a checagem de duplicidade e o `RPUSH` de forma atomica, evitando o problema de "ler lista inteira -> regravar lista inteira" sob concorrencia.
+- A remocao reconstroi a lista filtrada, o que e aceitavel para esse caso porque cancelamentos sao raros e pouco competitivos.
 
-## 2. Importar na Vercel
+## Variaveis de ambiente
 
-1. Entre em [vercel.com/new](https://vercel.com/new) e conecte sua conta do GitHub.
-2. Selecione o repositório que você acabou de criar.
-3. Não precisa mexer em nenhuma configuração de build — é um projeto estático simples com uma função de API. Clique em **Deploy**.
+O projeto aceita qualquer um destes pares:
 
-Nesse ponto o site já vai estar no ar, mas a confirmação de presença ainda não vai salvar (falta o banco de dados).
+- `KV_REST_API_URL` + `KV_REST_API_TOKEN`
+- `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`
 
-## 3. Criar o banco de dados (Vercel KV)
+Se voce usar Vercel KV, normalmente o par `KV_*` ja sera criado ao conectar o banco.
 
-1. Dentro do projeto na Vercel, vá na aba **Storage**.
-2. Clique em **Create Database** → escolha **KV** (é gratuito no plano Hobby).
-3. Depois de criado, clique em **Connect Project** e selecione este projeto. Isso adiciona as variáveis de ambiente necessárias automaticamente.
-4. Vá na aba **Deployments**, abra os três pontinhos do último deploy e clique em **Redeploy** (para a função pegar as novas variáveis de ambiente).
+Para desenvolvimento local, voce pode criar um arquivo `.env.local` com um desses pares.
 
-## 4. Pronto
+Exemplo:
 
-A URL que a Vercel gerou (algo como `https://seu-projeto.vercel.app`) é o link que você manda no grupo do WhatsApp. Todo mundo que abrir vai ver a mesma lista de confirmados em tempo real.
-
-## Testando localmente (opcional)
-
-Se você tiver o [Vercel CLI](https://vercel.com/docs/cli) instalado:
 ```bash
-npm i -g vercel
-vercel dev
+KV_REST_API_URL=https://seu-endpoint.upstash.io
+KV_REST_API_TOKEN=seu-token
 ```
-Ele vai pedir para linkar ao projeto na Vercel (para usar o mesmo banco KV) e então abrir em `http://localhost:3000`.
+
+## Rodando localmente
+
+1. Instale a CLI da Vercel se ainda nao tiver:
+   `npm i -g vercel`
+2. Na pasta do projeto, rode:
+   `npm run dev`
+3. Abra a URL mostrada no terminal. O `vercel dev` serve o `index.html` e a rota `api/players.js` juntos, como no deploy.
+
+## Deploy na Vercel
+
+1. Crie um novo repositorio no GitHub e envie estes arquivos.
+2. No painel da Vercel, clique em `Add New > Project`.
+3. Importe o repositorio.
+4. Antes do primeiro deploy, crie ou conecte um banco KV/Redis:
+   - Opcao A: `Storage > Connect Store > KV` na propria Vercel.
+   - Opcao B: um banco Upstash Redis com REST API habilitada.
+5. Garanta que as variaveis de ambiente do banco estejam disponiveis no projeto.
+6. Faça o deploy.
+7. Se conectou o KV depois do primeiro deploy, rode um novo deploy para a funcao serverless passar a enxergar as variaveis.
+
+## GitHub + Vercel em 1 passada
+
+1. Inicialize o repositorio local:
+   `git init`
+2. Adicione os arquivos:
+   `git add .`
+3. Crie o primeiro commit:
+   `git commit -m "feat: cria site de confirmacao do torneio"`
+4. Publique no GitHub e conecte esse repositorio na Vercel.
+
+## Fluxo de teste rapido
+
+1. Abra o site.
+2. Digite um nick e clique em `Confirmar presenca`.
+3. Verifique se o nick aparece na lista de confirmados e se a tela de sucesso mostra a posicao correta.
+4. Repita com mais de 20 nomes para validar a lista de espera.
+5. Tente confirmar o mesmo nick com variacoes de maiusculas/minusculas para validar o bloqueio de duplicidade.
+6. Clique em `Cancelar` em qualquer nome para testar a remocao com confirmacao.
+
+## Observacoes
+
+- A pagina faz polling em `/api/players` a cada 4 segundos e tambem quando a aba volta a ficar em foco.
+- O destaque visual de "meu nick" existe so na sessao atual do navegador e nao persiste ao recarregar a pagina.
+- Em falhas de leitura apos a carga inicial, o client mantem a ultima lista valida em memoria e nao zera a interface.
