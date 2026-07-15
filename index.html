@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmação — Evento Dota 2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg: #000000;
+    --panel: #111111;
+    --panel-border: #333333;
+    --orange-deep: #C10801;
+    --orange: #E85002;
+    --orange-light: #F16001;
+    --sand: #D9C3AB;
+    --white: #F9F9F9;
+    --gray: #646464;
+    --light-gray: #A7A7A7;
+    --dark-gray: #333333;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: radial-gradient(circle at 50% -10%, #1a1a1a 0%, var(--bg) 45%, #000000 100%);
+    color: var(--white);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 64px;
+  }
+
+  .wrap{ max-width: 720px; margin: 0 auto; padding: 0 20px; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    text-align:center;
+    padding: 48px 20px 32px;
+    position: relative;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; top:0; left:50%; transform:translateX(-50%);
+    width:1px; height:28px; background: linear-gradient(var(--orange), transparent);
+  }
+  .eyebrow{
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--orange-light);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  h1{
+    font-family: 'Cinzel', serif;
+    font-weight: 800;
+    font-size: clamp(28px, 6vw, 44px);
+    margin: 0 0 10px;
+    letter-spacing: 0.5px;
+    background: linear-gradient(180deg, var(--orange-light), var(--orange) 60%, var(--orange-deep));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .subtitle{ color: var(--light-gray); font-size: 15px; margin-bottom: 26px; }
+  .date-pill{
+    display:inline-flex; align-items:center; gap:10px;
+    border: 1px solid var(--panel-border);
+    background: var(--panel);
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 14px;
+    color: var(--white);
+  }
+  .date-pill b{ color: var(--orange-light); font-weight:600; }
+  .countdown{ color: var(--gray); font-size: 12px; margin-left: 6px; }
+
+  /* ---------- FORM (primary action, front and center) ---------- */
+  .action-panel{
+    background: linear-gradient(160deg, #161616, #0a0a0a);
+    border: 1px solid var(--orange-deep);
+    border-radius: 20px;
+    padding: 30px 26px;
+    margin: 8px 0 24px;
+    box-shadow: 0 0 0 1px rgba(232,80,2,0.08), 0 20px 50px -20px rgba(232,80,2,0.35);
+  }
+  .action-panel h2{
+    font-family:'Cinzel', serif;
+    font-size:19px;
+    margin:0 0 6px;
+    color: var(--white);
+    text-align:center;
+  }
+  .action-panel p.helper{ margin:0 0 20px; color:var(--light-gray); font-size:13.5px; text-align:center; }
+  .form-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  input[type=text]{
+    flex:1; min-width:180px;
+    background:#000000;
+    border:1px solid var(--dark-gray);
+    color:var(--white);
+    padding: 15px 16px;
+    border-radius:12px;
+    font-size:16px;
+    font-family:inherit;
+    animation: input-pulse 2.2s ease-in-out infinite;
+  }
+  input[type=text]:focus{ outline:none; border-color:var(--orange); animation:none; }
+  input[type=text]::placeholder{ color: var(--gray); }
+  @keyframes input-pulse{
+    0%, 100% { border-color: var(--dark-gray); box-shadow: 0 0 0 0 rgba(232,80,2,0); }
+    50% { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(232,80,2,0.16); }
+  }
+
+  button.confirm-btn{
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--orange-light), var(--orange-deep));
+    color:var(--white);
+    border:none;
+    font-weight:700;
+    font-size:16px;
+    padding: 15px 26px;
+    border-radius:12px;
+    cursor:pointer;
+    font-family:inherit;
+    transition: transform .15s ease, filter .15s ease;
+    white-space:nowrap;
+    animation: btn-pulse 2.4s ease-in-out infinite;
+  }
+  button.confirm-btn::after{
+    content:"";
+    position:absolute;
+    top:0; left:-160%;
+    width:55%; height:100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
+    transform: skewX(-20deg);
+    animation: btn-shine 3.2s ease-in-out infinite;
+  }
+  button.confirm-btn:hover{ filter:brightness(1.1); }
+  button.confirm-btn:active{ transform: scale(0.97); }
+  button.confirm-btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+  @keyframes btn-pulse{
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232,80,2,0.55), 0 0 16px rgba(241,96,1,0.25); }
+    50% { box-shadow: 0 0 0 9px rgba(232,80,2,0), 0 0 26px rgba(241,96,1,0.6); }
+  }
+  @keyframes btn-shine{
+    0% { left: -160%; }
+    45% { left: 160%; }
+    100% { left: 160%; }
+  }
+
+  .form-msg{ margin-top:14px; font-size:13.5px; min-height:18px; text-align:center; }
+  .form-msg.error{ color:#ff8a75; }
+
+  /* Success confirmation state */
+  .success-state{ display:none; text-align:center; }
+  .success-state.show{ display:block; }
+  .success-check{
+    width:56px; height:56px; margin:0 auto 14px;
+    border-radius:50%;
+    background: linear-gradient(180deg, var(--orange-light), var(--orange-deep));
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px;
+  }
+  .success-title{ font-family:'Cinzel',serif; font-size:19px; color:var(--white); margin-bottom:6px; }
+  .success-detail{ color: var(--light-gray); font-size:14px; margin-bottom:18px; }
+  .success-detail b{ color: var(--orange-light); }
+  .cancel-link{
+    background:none; border:1px solid var(--dark-gray); color:var(--light-gray);
+    font-size:13px; padding:9px 16px; border-radius:9px; cursor:pointer; font-family:inherit;
+  }
+  .cancel-link:hover{ border-color: var(--gray); color: var(--white); }
+
+  /* ---------- PROGRESS ---------- */
+  .slots-panel{
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin: 0 0 28px;
+  }
+  .slots-top{
+    display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px;
+  }
+  .slots-label{ font-size:13px; text-transform:uppercase; letter-spacing:1.5px; color:var(--light-gray); }
+  .slots-count{ font-family:'Cinzel',serif; font-size:22px; font-weight:700; color: var(--orange-light); }
+  .slots-count span{ color: var(--gray); font-size:16px; font-weight:500; }
+
+  .ancient-bar{
+    position: relative;
+    height: 18px;
+    border-radius: 9px;
+    background: #0a0a0a;
+    border: 1px solid var(--panel-border);
+    overflow: hidden;
+    display:flex;
+  }
+  .ancient-bar .fill-main{
+    height: 100%;
+    transition: width .5s ease;
+    background: linear-gradient(90deg, var(--orange-deep), var(--orange), var(--orange-light));
+  }
+  .ancient-bar .fill-empty{ flex:1; background: repeating-linear-gradient(45deg, #0f0f0f, #0f0f0f 6px, #141414 6px, #141414 12px); }
+  .slots-note{ margin-top:10px; font-size:12.5px; color:var(--gray); text-align:center; }
+
+  .full-banner{
+    margin-top: 14px;
+    text-align:center;
+    font-size: 13px;
+    background: rgba(193,8,1,0.12);
+    border: 1px solid var(--orange-deep);
+    color: #ff8a75;
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+
+  /* ---------- ROSTER ---------- */
+  .roster-title{
+    font-family:'Cinzel',serif;
+    font-size:15px;
+    color:var(--light-gray);
+    text-transform:uppercase;
+    letter-spacing:2px;
+    text-align:center;
+    margin: 6px 0 16px;
+  }
+  .roster-col{
+    background: var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .roster-head{
+    padding: 12px 16px;
+    font-family:'Cinzel',serif;
+    font-size:13px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    font-weight:600;
+    display:flex; justify-content:space-between; align-items:center;
+    background: linear-gradient(90deg, rgba(232,80,2,.15), transparent);
+    color: var(--orange-light);
+    border-bottom:1px solid var(--panel-border);
+  }
+
+  .roster-list{ list-style:none; margin:0; padding:8px; min-height:60px; }
+  .roster-list li{
+    display:flex; align-items:center; gap:10px;
+    padding: 10px 10px;
+    border-radius:8px;
+    font-size:14.5px;
+    cursor:pointer;
+  }
+  .roster-list li:hover{ background: rgba(255,255,255,0.04); }
+  .roster-list li .num{ color:var(--gray); font-size:12px; width:22px; text-align:right; }
+  .roster-list .empty-slot{ color: var(--gray); font-style:italic; font-size:13.5px; }
+  .roster-list li .rm{ margin-left:auto; opacity:0; font-size:12px; color:var(--gray); }
+  .roster-list li:hover .rm{ opacity:1; }
+  .roster-list li.mine{ background: rgba(232,80,2,0.08); }
+  .roster-list li.mine .num{ color: var(--orange-light); }
+
+  .waitlist{
+    margin-top:18px;
+    background: var(--panel);
+    border:1px dashed var(--panel-border);
+    border-radius:14px;
+    padding: 14px 16px;
+  }
+  .waitlist h3{
+    font-family:'Cinzel',serif; font-size:13px; letter-spacing:1.5px; text-transform:uppercase;
+    color: var(--orange-light); margin: 0 0 8px;
+  }
+  .waitlist ul{ list-style:none; margin:0; padding:0; }
+  .waitlist li{
+    padding:8px 4px; font-size:14px; display:flex; gap:10px; cursor:pointer; border-radius:6px;
+  }
+  .waitlist li:hover{ background: rgba(255,255,255,0.04); }
+  .waitlist li .num{ color:var(--gray); font-size:12px; width:18px; text-align:right; }
+
+  footer{ text-align:center; color:var(--gray); font-size:12px; margin-top:36px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eyebrow">Confirmação de Presença</div>
+    <h1>Nonstop Clássico Dota 2</h1>
+    <div class="subtitle">Confirme sua vaga até o dia 17 de Julho</div>
+    <div class="date-pill">
+      Evento em <b>21 de agosto de 2026</b> <span class="countdown" id="countdown"></span>
+    </div>
+  </div>
+
+  <div class="action-panel">
+    <div id="form-state">
+      <h2>Digite seu nick e confirme</h2>
+      <p class="helper">É só isso — o nick e um clique garantem sua vaga.</p>
+      <div class="form-row">
+        <input type="text" id="name-input" placeholder="Seu nick" maxlength="24" autocomplete="off">
+        <button class="confirm-btn" id="confirm-btn">Confirmar presença</button>
+      </div>
+      <div class="form-msg" id="form-msg"></div>
+    </div>
+
+    <div id="success-state" class="success-state">
+      <div class="success-check">✓</div>
+      <div class="success-title">Vaga reservada!</div>
+      <div class="success-detail">Nick: <b id="success-name"></b> — você é o <b id="success-slot"></b> confirmado.</div>
+      <button class="cancel-link" id="cancel-btn">Cancelar minha vaga</button>
+    </div>
+  </div>
+
+  <div class="slots-panel">
+    <div class="slots-top">
+      <div class="slots-label">Vagas preenchidas</div>
+      <div class="slots-count"><span id="count-num">0</span><span> / 20</span></div>
+    </div>
+    <div class="ancient-bar" id="ancient-bar">
+      <div class="fill-empty"></div>
+    </div>
+    <div class="slots-note">A vaga só é garantida após a confirmação acima.</div>
+    <div class="full-banner" id="full-banner" style="display:none;">As 20 vagas foram preenchidas. Novas confirmações entram na lista de espera.</div>
+  </div>
+
+  <div class="roster-title">Confirmados</div>
+  <div class="roster-col">
+    <div class="roster-head">Jogadores <span id="roster-count">0/20</span></div>
+    <ul class="roster-list" id="roster-list"></ul>
+  </div>
+
+  <div class="waitlist" id="waitlist-panel" style="display:none;">
+    <h3>Lista de espera</h3>
+    <ul id="waitlist-list"></ul>
+  </div>
+
+  <footer>Toque no seu nome na lista para cancelar sua confirmação.</footer>
+</div>
+
+<script>
+const MAX_SLOTS = 20;
+const EVENT_DATE = new Date('2026-08-21T00:00:00');
+
+let players = []; // {name, ts}
+let myName = null; // tracked only for this browsing session
+
+function updateCountdown(){
+  const now = new Date();
+  const diffMs = EVENT_DATE - now;
+  const el = document.getElementById('countdown');
+  if(diffMs <= 0){ el.textContent = '(hoje é o dia!)'; return; }
+  const days = Math.floor(diffMs / (1000*60*60*24));
+  el.textContent = `(faltam ${days} dias)`;
+}
+updateCountdown();
+setInterval(updateCountdown, 1000*60*60);
+
+async function loadPlayers(){
+  try{
+    const res = await fetch('/api/players');
+    const data = await res.json();
+    players = Array.isArray(data.players) ? data.players : [];
+  }catch(e){
+    console.error('Falha ao carregar', e);
+  }
+  render();
+}
+
+async function savePlayers(){
+  try{
+    await fetch('/api/players', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ players })
+    });
+  }catch(e){
+    console.error('Falha ao salvar', e);
+  }
+}
+
+function render(){
+  const confirmed = players.slice(0, MAX_SLOTS);
+  const waitlist = players.slice(MAX_SLOTS);
+
+  document.getElementById('count-num').textContent = confirmed.length;
+
+  const bar = document.getElementById('ancient-bar');
+  const pct = confirmed.length / MAX_SLOTS;
+  bar.innerHTML = '';
+  if(confirmed.length){
+    const f = document.createElement('div');
+    f.className = 'fill-main';
+    f.style.width = (pct * 100) + '%';
+    bar.appendChild(f);
+  }
+  if(pct < 1){
+    const e = document.createElement('div');
+    e.className = 'fill-empty';
+    bar.appendChild(e);
+  }
+
+  document.getElementById('full-banner').style.display = confirmed.length >= MAX_SLOTS ? 'block' : 'none';
+  document.getElementById('roster-count').textContent = confirmed.length + '/20';
+
+  renderRosterList(confirmed);
+
+  const waitPanel = document.getElementById('waitlist-panel');
+  const waitList = document.getElementById('waitlist-list');
+  if(waitlist.length){
+    waitPanel.style.display = 'block';
+    waitList.innerHTML = '';
+    waitlist.forEach((p, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span class="num">${i+1}.</span> <span>${escapeHtml(p.name)}</span>`;
+      li.onclick = () => removePlayer(p.name);
+      waitList.appendChild(li);
+    });
+  } else {
+    waitPanel.style.display = 'none';
+  }
+
+  // keep success panel in sync if my name was removed elsewhere
+  if(myName && !players.some(p => p.name === myName)){
+    myName = null;
+    showFormState();
+  }
+}
+
+function renderRosterList(list){
+  const ul = document.getElementById('roster-list');
+  ul.innerHTML = '';
+  for(let i=0;i<MAX_SLOTS;i++){
+    const li = document.createElement('li');
+    if(list[i]){
+      const isMine = list[i].name === myName;
+      if(isMine) li.classList.add('mine');
+      li.innerHTML = `<span class="num">${i+1}.</span> <span>${escapeHtml(list[i].name)}</span> <span class="rm">cancelar ✕</span>`;
+      li.onclick = () => removePlayer(list[i].name);
+    } else {
+      li.innerHTML = `<span class="num">${i+1}.</span> <span class="empty-slot">Aguardando jogador...</span>`;
+    }
+    ul.appendChild(li);
+  }
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function showSuccessState(name, slotIndex, isWaitlist){
+  document.getElementById('form-state').style.display = 'none';
+  document.getElementById('success-state').classList.add('show');
+  document.getElementById('success-name').textContent = name;
+  const slotLabel = document.getElementById('success-slot');
+  const title = document.querySelector('.success-title');
+  const check = document.querySelector('.success-check');
+  if(isWaitlist){
+    title.textContent = 'Você está na lista de espera';
+    slotLabel.textContent = `${slotIndex + 1}º`;
+    check.textContent = '!';
+  } else {
+    title.textContent = 'Vaga reservada!';
+    slotLabel.textContent = `${slotIndex + 1}º`;
+    check.textContent = '✓';
+  }
+}
+
+function showFormState(){
+  document.getElementById('form-state').style.display = 'block';
+  document.getElementById('success-state').classList.remove('show');
+  document.getElementById('name-input').value = '';
+  document.getElementById('form-msg').textContent = '';
+}
+
+async function confirmPlayer(){
+  const input = document.getElementById('name-input');
+  const msg = document.getElementById('form-msg');
+  const btn = document.getElementById('confirm-btn');
+  const name = input.value.trim();
+
+  msg.textContent = '';
+  msg.className = 'form-msg';
+
+  if(!name){
+    msg.textContent = 'Digite seu nick antes de confirmar.';
+    msg.classList.add('error');
+    return;
+  }
+
+  btn.disabled = true;
+  await loadPlayers(); // refresh with latest shared state before writing
+
+  const exists = players.some(p => p.name.toLowerCase() === name.toLowerCase());
+  if(exists){
+    msg.textContent = 'Esse nick já confirmou presença.';
+    msg.classList.add('error');
+    btn.disabled = false;
+    return;
+  }
+
+  players.push({ name, ts: Date.now() });
+  await savePlayers();
+  myName = name;
+  render();
+
+  const slotIndex = players.findIndex(p => p.name === name);
+  showSuccessState(name, slotIndex, slotIndex >= MAX_SLOTS);
+  btn.disabled = false;
+}
+
+async function removePlayer(name){
+  if(!confirm(`Cancelar a confirmação de "${name}"?`)) return;
+  await loadPlayers();
+  players = players.filter(p => p.name !== name);
+  await savePlayers();
+  if(name === myName){ myName = null; showFormState(); }
+  render();
+}
+
+document.getElementById('confirm-btn').addEventListener('click', confirmPlayer);
+document.getElementById('name-input').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') confirmPlayer();
+});
+document.getElementById('cancel-btn').addEventListener('click', () => {
+  if(myName) removePlayer(myName);
+});
+
+loadPlayers();
+// keep the roster fresh for everyone viewing the page
+setInterval(loadPlayers, 8000);
+</script>
+</body>
+</html>
